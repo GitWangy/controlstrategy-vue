@@ -13,19 +13,19 @@
         </el-menu-item>
         <el-menu-item index="/order">
             <i class="el-icon-setting"></i>
-            <span slot="title">运输订单订单大全</span>
+            <span slot="title">运输订单大全</span>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="/dic">
             <i class="el-icon-setting"></i>
-            <span slot="title">信息列表</span>
+            <span slot="title">数据字典维护</span>
+        </el-menu-item>
+        <el-menu-item index="/dicWrite">
+            <i class="el-icon-setting"></i>
+            <span slot="title">字典录入</span>
         </el-menu-item>
         <el-menu-item index="4">
             <i class="el-icon-setting"></i>
-            <span slot="title">信息发布</span>
-        </el-menu-item>
-        <el-menu-item index="4">
-            <i class="el-icon-setting"></i>
-            <span slot="title">信息发布</span>
+            <span slot="title">订单录入</span>
         </el-menu-item>
         <el-menu-item index="5">
             <i class="el-icon-setting"></i>

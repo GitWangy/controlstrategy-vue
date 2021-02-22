@@ -5,37 +5,37 @@
                 <!-- 面包屑路径导航 -->
                 <el-breadcrumb separator-class="el-icon-arrow-right">
                     <el-breadcrumb-item to="/">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item>运输订单订单大全</el-breadcrumb-item>
+                    <el-breadcrumb-item>运输订单大全</el-breadcrumb-item>
                 </el-breadcrumb>
                 <!-- /面包屑路径导航 -->
             </div>
             <!-- 数据筛选表单 -->
             <el-form ref="form" :model="form" label-width="40px" size="mini">
                 <el-form-item label="状态">
-                    <el-radio-group v-model="status">
+                    <el-radio-group v-model="items">
                         <!--
                           el-radio 默认把 label 作为文本和选中之后的 value 值
                          -->
                         <el-radio :label="null">全部</el-radio>
-                        <el-radio :label="0">细石</el-radio>
-                        <el-radio :label="1">尾矿粗砂</el-radio>
-                        <el-radio :label="2">尾矿细砂</el-radio>
-                        <el-radio :label="3">矿石</el-radio>
-                        <el-radio :label="4">尾矿粗中砂</el-radio>
-                        <el-radio :label="5">尾矿青粗砂</el-radio>
-                        <el-radio :label="6">二矿</el-radio>
+                        <el-radio label="t001">细石</el-radio>
+                        <el-radio label="t002">尾矿粗砂</el-radio>
+                        <el-radio label="t003">尾矿细砂</el-radio>
+                        <el-radio label="t004">矿石</el-radio>
+                        <el-radio label="t005">尾矿粗中砂</el-radio>
+                        <el-radio label="t006">尾矿青粗砂</el-radio>
+                        <el-radio label="t007">二矿</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="频道">
-                    <el-select v-model="channelId" placeholder="请选择频道">
+                <el-form-item label="站点">
+                    <el-select v-model="supplierStation" placeholder="请选择站点">
                         <el-option
                                 label="全部"
                                 :value="null"
                         ></el-option>
                         <el-option
-                                :label="channel.name"
-                                :value="channel.id"
-                                v-for="(channel, index) in channels"
+                                :label="controlDic.dicName"
+                                :value="controlDic.dicCode"
+                                v-for="(controlDic, index) in controlDics"
                                 :key="index"
                         ></el-option>
                     </el-select>
@@ -59,7 +59,7 @@
                     <el-button
                             type="primary"
                             :disabled="loading"
-                            @click="loadArticles(1)"
+                            @click="loadOrderBasicInfo(1)"
                     >查询</el-button>
                 </el-form-item>
             </el-form>
@@ -72,30 +72,62 @@
             <!-- 数据筛选表单 -->
             <el-table
                     class = "list-table"
-                    :data="tableData"
+                    :data="orders"
                     stripe
-                    border
                     size = "small"
                     style="width: 100%">
                 <el-table-column
-                        prop="date"
-                        label="日期"
-                        width="180">
+                        prop="items"
+                        label="类型"
+                >
                 </el-table-column>
                 <el-table-column
-                        prop="name"
-                        label="姓名"
-                        width="180">
+                        prop="licenseNumber"
+                        label="运输车牌号"
+                >
                 </el-table-column>
                 <el-table-column
-                        prop="address"
-                        label="地址">
+                    prop="orderDate"
+                    label="订单日期"
+            >
+            </el-table-column>
+                <el-table-column
+                    prop="orderNumber"
+                    label="订单单号"
+            >
+            </el-table-column>
+                <el-table-column
+                    prop="supplierStation"
+                    label="站点"
+            >
+            </el-table-column>
+                <el-table-column
+                    prop="supperlier"
+                    label="供货人"
+            >
+            </el-table-column>
+                <el-table-column
+                        prop="suttle"
+                        label="净重"
+                >
                 </el-table-column>
+                <el-table-column
+                        prop="unitPrice"
+                        label="单价"
+                >
+                </el-table-column>
+                <el-table-column
+                        prop="totalAmountOrder"
+                        label="金额"
+                >
+                </el-table-column>
+
             </el-table>
             <el-pagination
                     background
+                    @current-change="onCurrentChange"
                     layout="prev, pager, next"
-                    :total="1000">
+                    :total="totalCount">
             </el-pagination>
             <!-- /数据筛选表单 -->
         </el-card>
@@ -103,6 +135,8 @@
 </template>
 
 <script>
+    import {getAllOrderBasicInfo} from "../../api/order";
+    import {getAllControDicByType} from "../../api/order"
     export default {
         name: "OrderIndex",
         data() {
@@ -117,28 +151,47 @@
                     resource: '',
                     desc: ''
                 },
-                tableData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1517 弄'
-            }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1519 弄'
-            }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1516 弄'
-            }]
+                orders:[],
+                controlDics:[],
+                totalCount:0,
+                items:null,
+                supplierStation:null,
+                rangeDate:[]
             }
         },
+        created() {
+            this.loadOrderBasicInfo(1)
+            this.loadControlDicInfo(1);
+        },
         methods: {
+            loadControlDicInfo(dicType) {
+                getAllControDicByType({
+                dicType : dicType
+            }).then(res =>{
+                this.controlDics = res.data.data
+            })
+            },
+            loadOrderBasicInfo (page) {
+                getAllOrderBasicInfo({
+                    offset:page,
+                    limit:10,
+                    startDate:this.rangeDate[0],
+                    endDate:this.rangeDate[1],
+                    orderNumber:null,
+                    supplierStation:this.supplierStation,
+                    items : this.items
+                }).then(
+                    res=>{
+                        this.orders = res.data.data.list
+                        this.totalCount = res.data.data.total
+                        console.log(this.totalCount)
+                })
+            },
             onSubmit() {
                 console.log('submit!');
+            },
+            onCurrentChange(page){
+                this.loadOrderBasicInfo(page)
             }
         }
     }

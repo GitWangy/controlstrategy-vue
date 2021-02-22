@@ -4,6 +4,8 @@ import Layout from '../views/layout/index.vue'
 import Login from "../views/login/index";
 import Order from "../views/order/index"
 import Home from "../views/home/index"
+import DIC from "../views/dic/index"
+import DICWRITE from "../views/dic/dicWrite"
 Vue.use(VueRouter)
 
 // 路由解释 path ：访问路径  name : 自己定义的名称 component : 组件 导入时的名称
@@ -34,6 +36,14 @@ const routes = [{
         path: '/order',
         name: 'order',
         component: Order
+      },{
+        path: '/dic',
+        name: 'dic',
+        component : DIC
+      },{
+        path: '/dicWrite',
+        name: 'dicWrite',
+        component : DICWRITE
       }
     ]
   }
