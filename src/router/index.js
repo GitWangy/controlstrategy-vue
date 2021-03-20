@@ -3,9 +3,10 @@ import VueRouter from 'vue-router'
 import Layout from '../views/layout/index.vue'
 import Login from "../views/login/index";
 import Order from "../views/order/index"
-import Home from "../views/home/index"
+import DATA from "../views/data/index"
 import DIC from "../views/dic/index"
 import DICWRITE from "../views/dic/dicWrite"
+import ORDERWRITE from "../views/order/orderWrite"
 Vue.use(VueRouter)
 
 // 路由解释 path ：访问路径  name : 自己定义的名称 component : 组件 导入时的名称
@@ -25,12 +26,12 @@ const routes = [{
         // 我们通常会把根路径 / 设置为网站的首页
         // 为啥呢？因为我们在手动输入网址访问网站的时候，可以省略 /
         // 如果你是别的名称，则必须加上
-        path: '', // path 为空，会作为默认子路由渲染
+        path: '/order', // path 为空，会作为默认子路由渲染
 
         // 路由的名字是干啥的？
         // 参考：https://gitee.com/lipengzhou/toutiao-publish-admin/issues/I1F1BA
-        name: 'home',
-        component: Home
+        name: 'order',
+        component: Order
       },
       {
         path: '/order',
@@ -44,6 +45,14 @@ const routes = [{
         path: '/dicWrite',
         name: 'dicWrite',
         component : DICWRITE
+      },{
+        path: '/orderWrite',
+        name: 'orderWrite',
+        component: ORDERWRITE
+      },{
+        path: '/data',
+        name: 'data',
+        component: DATA
       }
     ]
   }

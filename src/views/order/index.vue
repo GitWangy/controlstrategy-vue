@@ -67,7 +67,16 @@
         </el-card>
         <el-card class="filter-card">
             <div slot="header" class="clearfix">
-              <span>本次共100车，总金额为20万</span>
+                <el-button
+                        type="primary"
+                        :disabled="loading"
+                        @click="clickTotalAmount()"
+                >点击查看当前总金额</el-button>
+                <el-button
+                        type="primary"
+                        :disabled="loading"
+                        @click="exportO()"
+                >导出</el-button>
             </div>
             <!-- 数据筛选表单 -->
             <el-table
@@ -76,6 +85,11 @@
                     stripe
                     size = "small"
                     style="width: 100%">
+                <el-table-column
+                        prop="id"
+                        label="订单id"
+                >
+                </el-table-column>
                 <el-table-column
                         prop="items"
                         label="类型"
@@ -121,10 +135,21 @@
                         label="金额"
                 >
                 </el-table-column>
+                <el-table-column
+                        fixed="right"
+                        label="操作"
+                        width="100">
+                    <template slot-scope="scope">
+                        <el-button @click="handleClick(scope.row.id)" type="text" size="small">删除</el-button>
+                        <el-button @click="handleDetailClick(scope.row.id)" type="text" size="small">编辑</el-button>
+                    </template>
+                </el-table-column>
 
             </el-table>
             <el-pagination
                     background
+                    :page-size="5"
+                    current-page = "currentPage"
                     @current-change="onCurrentChange"
                     layout="prev, pager, next"
                     :total="totalCount">
@@ -137,6 +162,8 @@
 <script>
     import {getAllOrderBasicInfo} from "../../api/order";
     import {getAllControDicByType} from "../../api/order"
+    import {updateOrInsertTransportOrder,exportMethod,exportOrderInfo} from "../../api/order"
+    import requset from "../../utils/request";
     export default {
         name: "OrderIndex",
         data() {
@@ -156,7 +183,9 @@
                 totalCount:0,
                 items:null,
                 supplierStation:null,
-                rangeDate:[]
+                rangeDate:[],
+                currentPage:1,
+                totalAmount : null
             }
         },
         created() {
@@ -174,7 +203,7 @@
             loadOrderBasicInfo (page) {
                 getAllOrderBasicInfo({
                     offset:page,
-                    limit:10,
+                    limit:5,
                     startDate:this.rangeDate[0],
                     endDate:this.rangeDate[1],
                     orderNumber:null,
@@ -184,14 +213,39 @@
                     res=>{
                         this.orders = res.data.data.list
                         this.totalCount = res.data.data.total
-                        console.log(this.totalCount)
+                        this.totalAmount = res.data.data.list[0].totalAmount
+                        this.currentPage = res.data.data.currentPage
                 })
             },
-            onSubmit() {
-                console.log('submit!');
+            exportO(){
+                exportMethod({
+                    startDate:this.rangeDate[0],
+                    endDate:this.rangeDate[1],
+                    orderNumber:null,
+                    supplierStation:this.supplierStation,
+                    items : this.items,
+                    filename : '订单统计'
+                })
+            },
+            handleDetailClick(id){
+                this.$router.push({path:'/orderWrite',query: {id:id}})
+            },
+            handleClick(id){
+                updateOrInsertTransportOrder(
+                    {
+                        id:id,
+                        valid : 0
+                    }
+                ).then(
+                    this.loadOrderBasicInfo(1),
+                    this.currentPage = 1
+                )
             },
             onCurrentChange(page){
                 this.loadOrderBasicInfo(page)
+            },
+            clickTotalAmount () {
+                alert("本次车数共："+this.totalCount+"车 "+"总计金额共："+this.totalAmount+"元")
             }
         }
     }

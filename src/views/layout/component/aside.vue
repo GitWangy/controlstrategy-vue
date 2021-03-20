@@ -23,21 +23,13 @@
             <i class="el-icon-setting"></i>
             <span slot="title">字典录入</span>
         </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="/orderWrite">
             <i class="el-icon-setting"></i>
             <span slot="title">订单录入</span>
         </el-menu-item>
-        <el-menu-item index="5">
+        <el-menu-item index="/data">
             <i class="el-icon-setting"></i>
-            <span slot="title">信息发布</span>
-        </el-menu-item>
-        <el-menu-item index="6">
-            <i class="el-icon-setting"></i>
-            <span slot="title">信息发布</span>
-        </el-menu-item>
-        <el-menu-item index="7">
-            <i class="el-icon-setting">个人设置</i>
-            <span slot="title"></span>
+            <span slot="title">跑批错误数据</span>
         </el-menu-item>
     </el-menu>
 </template>

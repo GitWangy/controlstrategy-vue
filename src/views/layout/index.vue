@@ -10,7 +10,7 @@
               'el-icon-s-fold': isCollapse,
               'el-icon-s-unfold': !isCollapse
             }" @click="isCollapse = !isCollapse"></i>
-                    <span>王雨制作</span>
+                    <span>后台管理</span>
                 </div>
                 <el-dropdown>
                     <div class="el-wrap">

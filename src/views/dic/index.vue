@@ -47,7 +47,6 @@
         </el-card>
         <el-card class="filter-card">
             <div slot="header" class="clearfix">
-                <span>本次共100车，总金额为20万</span>
             </div>
             <!-- 数据筛选表单 -->
             <el-table
@@ -94,6 +93,7 @@
             </el-table>
             <el-pagination
                     background
+                    :page-size="5"
                     @current-change="onCurrentChange"
                     layout="prev, pager, next"
                     :total="totalCount">
@@ -124,6 +124,7 @@
                 totalCount:0,
                 dicType:null,
                 valid:null,
+                size:null
             }
         },
         created() {
@@ -140,7 +141,7 @@
                     res=>{
                         this.dic = res.data.data.list
                         this.totalCount = res.data.data.total
-                        console.log(this.totalCount)
+                       // this.size = this.totalCount/5
                     })
             },
             handleClick(id){
